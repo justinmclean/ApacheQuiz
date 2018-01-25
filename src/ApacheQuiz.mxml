@@ -35,7 +35,7 @@ limitations under the License.
 
         public var questions:Array = [];
 
-        [Bindable] public var score:int;
+        [Bindable] public var score:Number;
         [Bindable] public var total:int;
         [Bindable] public var maxQuestions:int;
         [Bindable] public var noQuestions:int = 5;
@@ -47,6 +47,7 @@ limitations under the License.
         [Bindable] public var ask:String;
         [Bindable] public var reason:String;
         [Bindable] public var link:String;
+        [Bindable] public var noright:int = 0;
 
         public function loadQuiz():void {
             load.url = "quiz.json";
@@ -117,24 +118,35 @@ limitations under the License.
             var hints:Array = [];
 
             right = true;
+            noright = 0;
             
             for (var i:int = 1; i <= showNo; i++) {
                 var checkbox:CheckBox = this["checkbox" + i] as CheckBox;
                 var answer:Object = question["answers"][order[i-1]];
-                if (checkbox.selected && !answer["correct"]) {
-                    right = false;
-                    hints.push(answer["hint"]);
+                if (checkbox.selected) {
+                    if (!answer["correct"]) {
+                        right = false;
+                        hints.push(answer["hint"]);
+                    }
+                    else {
+                        noright++;
+                    }
                 }
-                if (!checkbox.selected && answer["correct"]) {
-                    right = false;
-                    hints.push(answer["hint"]);
+                else {
+                    if (answer["correct"]) {
+                      right = false;
+                      hints.push(answer["hint"]);
+                    }
+                    else {
+                      noright++;
+                    }
                 }
             }
 
+            noright = noright * 100 / showNo;
+
             total++;
-            if (right) {
-                score++;
-            }
+            score += noright/100;
             
             reason = question.reason;
 
@@ -267,8 +279,8 @@ limitations under the License.
                     <js:CheckBox id="checkbox7" width="100%" />
                     <js:CheckBox id="checkbox8" width="100%" />
                 </js:Container>
-                <js:MultilineLabel width="100%" text="NOTE that none, one or more than one answer could be right. Please tick all you think are correct. Each answer must be correct on it own not in combination with other answers." />
-                <js:MultilineLabel width="100%" text="DISCLAIMER This is still a work in progress and some questions may neeed improvemnets and may not be in line with policy." />
+                <js:MultilineLabel width="100%" text="NOTE that no answer, or one or more than one answer, could be right. Please tick all you think are correct. Each answer must be correct on its own not in combination with other answers." />
+                <js:MultilineLabel width="100%" text="DISCLAIMER This is still a work in progress and some questions may need improvement and may not be in line with policy." />
                 <js:TextButton text="Next Question" click="result()" />
             </js:Container>
             <js:Container id="resultPage" visible="false">
@@ -279,7 +291,8 @@ limitations under the License.
                     <js:SimpleCSSStyles padding="20" />
                 </js:style>
                 <js:Label text="You got it right" visible="{right}" />
-                <js:Label text="Sorry that's not quite right. Here some help so you'll get it right next time." visible="{!right}"/>
+                <js:Label text="Sorry that's not quite right. Here is some help so you'll get it right next time." visible="{!right}"/>
+                <js:Label text="But you were close. These are tricky questions and are trying to trip you up." visible="{!right &amp;&amp; noright > 50}"/>
                 <js:VContainer>
                     <js:MultilineLabel text="{reason}" width="500" />
                 </js:VContainer>

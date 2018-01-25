@@ -42,12 +42,15 @@ limitations under the License.
 
         public var questionNo:int;
         public var order:Array = [];
+        public var level:int = 1;
 
         [Bindable] public var right:Boolean;
         [Bindable] public var ask:String;
         [Bindable] public var reason:String;
         [Bindable] public var link:String;
         [Bindable] public var noright:int = 0;
+
+        public var actualShown:int;
 
         public function loadQuiz():void {
             load.url = "quiz.json";
@@ -76,15 +79,20 @@ limitations under the License.
 
             i = 1;
             order = [];
-            while (i <= showNo) {
+            var tries:int = 0;
+            actualShown = 0;
+
+            while (i <= showNo && tries < 100) {
                 checkBox = this["checkbox" + i] as CheckBox;
                 checkBox.visible = true;
                 var answerNo:int = Math.floor(Math.random()*noAnswers);
-                if (!order.includes(answerNo)) {
+                if (!order.includes(answerNo) && answers[answerNo]["level"] <= level) {
                     checkBox.text = answers[answerNo]["answer"];
                     order.push(answerNo);
                     i++;
+                    actualShown++;
                 }
+                tries++;
             }
         }
 
@@ -114,13 +122,12 @@ limitations under the License.
         public function checkAnswer():Boolean {
             var question:Object = questions[questionNo];
             ask = question.question;
-            var showNo:int = question.show;
             var hints:Array = [];
 
             right = true;
             noright = 0;
-            
-            for (var i:int = 1; i <= showNo; i++) {
+
+            for (var i:int = 1; i <= actualShown; i++) {
                 var checkbox:CheckBox = this["checkbox" + i] as CheckBox;
                 var answer:Object = question["answers"][order[i-1]];
                 if (checkbox.selected) {
@@ -143,7 +150,7 @@ limitations under the License.
                 }
             }
 
-            noright = noright * 100 / showNo;
+            noright = noright * 100 / actualShown;
 
             total++;
             score += noright/100;
@@ -256,6 +263,12 @@ limitations under the License.
                     <js:Label text="No of questions to ask:" />
                     <js:TextInput id="newQuestions" text="{noQuestions}" change="noQuestions = Number(newQuestions.text)" />
                 </js:HContainer>
+                <js:VContainer>
+                    <js:Label text="Level:" />
+                    <js:RadioButton id="easy" groupName="setLevel" width="100%" selected="true" text="Easy" change="{level = 1}" />
+                    <js:RadioButton id="medium" groupName="setLevel" width="100%" text="Medium" change="{level = 2}"/>
+                    <js:RadioButton id="hard" groupName="setLevel" width="100%" text="Hard" change="{level = 3}"/>
+                </js:VContainer>
                 <js:TextButton text="Start Quiz" click="begin()" />
             </js:Container>
             <js:Container id="questionPage" visible="false">

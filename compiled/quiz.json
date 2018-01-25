@@ -658,7 +658,7 @@
       {
         "answer": "Prefer a Category A license over a Category B license over a Category X license and include that.",
         "correct": true,
-        "level": 2,
+        "level": 1,
         "hint": "Select the most permissive license and use that."
       },
       {

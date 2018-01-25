@@ -60,7 +60,7 @@ limitations under the License.
         }
 
         public function chooseQuestion():void {
-            questionNo = Math.floor(Math.random()*noQuestions);
+            questionNo = Math.floor(Math.random()*maxQuestions);
 
             var question:Object = questions[questionNo];
             ask = question["question"];

@@ -1,0 +1,329 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2018 Justin Mclean
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<js:Application xmlns:fx="http://ns.adobe.com/mxml/2009"
+                xmlns:js="library://ns.apache.org/royale/basic"
+                xmlns:html="library://ns.apache.org/royale/html"
+                applicationComplete="loadQuiz()">
+
+    <fx:Script><![CDATA[
+        import org.apache.royale.events.Event;
+        import org.apache.royale.net.HTTPConstants;
+        import org.apache.royale.net.HTTPService;
+
+        import org.apache.royale.html.CheckBox;
+        import org.apache.royale.html.elements.A;
+
+        public const NO_CHECKBOXES:int = 8;
+        public const NO_HINTS:int = 8;
+        public const NO_LINKS:int = 8;
+
+        public var load:HTTPService = new HTTPService();
+
+        public var questions:Array = [];
+
+        [Bindable] public var score:int;
+        [Bindable] public var total:int;
+        [Bindable] public var maxQuestions:int;
+        [Bindable] public var noQuestions:int = 5;
+
+        public var questionNo:int;
+        public var order:Array = [];
+
+        [Bindable] public var right:Boolean;
+        [Bindable] public var ask:String;
+        [Bindable] public var reason:String;
+        [Bindable] public var link:String;
+
+        public function loadQuiz():void {
+            load.url = "quiz.json";
+            load.addEventListener("complete", loadedJSON);
+            load.send();
+        }
+
+        public function loadedJSON(event:Event):void {
+            questions = load.json as Array;
+            maxQuestions = questions.length;
+        }
+
+        public function chooseQuestion():void {
+            questionNo = Math.floor(Math.random()*noQuestions);
+
+            var question:Object = questions[questionNo];
+            ask = question["question"];
+            var showNo:int = question["show"];
+            var answers:Array = question["answers"];
+            var noAnswers:int = answers.length;
+
+            for (var i:int = 1; i <= 8; i ++) {
+                var checkBox:CheckBox = this["checkbox" + i] as CheckBox;
+                checkBox.visible = false;
+            }
+
+            i = 1;
+            order = [];
+            while (i <= showNo) {
+                checkBox = this["checkbox" + i] as CheckBox;
+                checkBox.visible = true;
+                var answerNo:int = Math.floor(Math.random()*noAnswers);
+                if (!order.includes(answerNo)) {
+                    checkBox.text = answers[answerNo]["answer"];
+                    order.push(answerNo);
+                    i++;
+                }
+            }
+        }
+
+        public function resetCheckboxes():void {
+            for (var i:int = 1; i <= NO_CHECKBOXES; i++) {
+                var checkBox:CheckBox = this["checkbox" + i] as CheckBox;
+                checkBox.selected = false;
+            }
+        }
+
+        public function hideHints():void {
+            someHints.visible = false;
+            for (var i:int = 1; i <= NO_HINTS; i++) {
+                var hint:Label = this["hint" + i] as Label;
+                hint.visible = false;
+            }
+        }
+
+        public function hideLinks():void {
+            seealso.visible = false;
+            for (var i:int = 1; i <= NO_LINKS; i++) {
+                var link:A = this["link" + i] as A;
+                link.visible = false;
+            }
+        }
+
+        public function checkAnswer():Boolean {
+            var question:Object = questions[questionNo];
+            ask = question.question;
+            var showNo:int = question.show;
+            var hints:Array = [];
+
+            right = true;
+            
+            for (var i:int = 1; i <= showNo; i++) {
+                var checkbox:CheckBox = this["checkbox" + i] as CheckBox;
+                var answer:Object = question["answers"][order[i-1]];
+                if (checkbox.selected && !answer["correct"]) {
+                    right = false;
+                    hints.push(answer["hint"]);
+                }
+                if (!checkbox.selected && answer["correct"]) {
+                    right = false;
+                    hints.push(answer["hint"]);
+                }
+            }
+
+            total++;
+            if (right) {
+                score++;
+            }
+            
+            reason = question.reason;
+
+            hideHints();
+            if (hints.length > 0) {
+                someHints.visible = true;
+                for (i = 1; i <= hints.length; i++) {
+                    var hint:Label = this["hint" + i] as Label;
+                    hint.visible = true;
+                    answer = question["answers"][order[i-1]];
+                    hint.text = answer["hint"];
+                }
+            }
+
+            var links:Array = question["links"];
+            hideLinks();
+            if (links.length > 0) {
+                seealso.visible = true;
+                for (i = 1; i <= links.length; i++) {
+                    var link:A = this["link" + i] as A;
+                    link.visible = true;
+                    link.text = links[i-1]["name"];
+                    link.href = links[i-1]["link"];
+                  }
+            }
+            resetCheckboxes();
+
+            return right;
+        }
+
+        public function endQuiz():void {
+            if (total >= noQuestions)   {
+                end();
+            }
+            else {
+                question();
+            }
+        }
+
+        public function reset():void {
+            score = 0;
+            total = 0;
+        }
+
+        public function begin():void {
+            if (noQuestions > 0) {
+                reset();
+                question();
+            }
+        }
+
+        public function settings():void {
+            startPage.visible = true;
+            questionPage.visible = false;
+            resultPage.visible = false;
+            scorePage.visible = false;
+        }
+
+        public function question():void {
+            chooseQuestion();
+            startPage.visible = false;
+            questionPage.visible = true;
+            resultPage.visible = false;
+            scorePage.visible = false;
+        }
+
+        public function result():void {
+            checkAnswer();
+            startPage.visible = false;
+            questionPage.visible = false;
+            resultPage.visible = true;
+            scorePage.visible = false;
+        }
+
+        public function end():void {
+            startPage.visible = false;
+            questionPage.visible = false;
+            resultPage.visible = false;
+            scorePage.visible = true;
+        }
+        ]]></fx:Script>
+
+    <js:valuesImpl>
+        <js:SimpleCSSValuesImpl/>
+    </js:valuesImpl>
+
+    <js:beads>
+        <js:ApplicationDataBinding />
+    </js:beads>
+    
+    <js:initialView>
+        <js:View height="100%" width="100%">
+            <js:beads>
+                <js:VerticalLayoutWithPaddingAndGap paddingTop="10" paddingBottom="10" paddingRight="20" paddingLeft="20" />
+            </js:beads>
+            <js:Container id="startPage" visible="true">
+                <js:beads>
+                    <js:VerticalLayoutWithPaddingAndGap gap="20" />
+                </js:beads>
+                <js:style>
+                    <js:SimpleCSSStyles padding="20" />
+                </js:style>
+                <js:Image src="logos/asf_logo.png" height="175" width="429" />
+                <js:Label text="How much you you know about Apache policy?" />
+                <js:Label text="{maxQuestions} questions loaded" />
+                <js:HContainer>
+                    <js:Label text="No of questions to ask:" />
+                    <js:TextInput id="newQuestions" text="{noQuestions}" change="noQuestions = Number(newQuestions.text)" />
+                </js:HContainer>
+                <js:TextButton text="Start Quiz" click="begin()" />
+            </js:Container>
+            <js:Container id="questionPage" visible="false">
+                <js:beads>
+                    <js:VerticalLayoutWithPaddingAndGap gap="20" />
+                </js:beads>
+                <js:style>
+                    <js:SimpleCSSStyles padding="20" />
+                </js:style>
+                <js:MultilineLabel text="{ask}" width="500" />
+                <js:Container id="checkboxes" width="500">
+                    <js:beads>
+                        <js:VerticalLayoutWithPaddingAndGap gap="10" />
+                    </js:beads>
+                    <js:CheckBox id="checkbox1" width="100%" />
+                    <js:CheckBox id="checkbox2" width="100%" />
+                    <js:CheckBox id="checkbox3" width="100%" />
+                    <js:CheckBox id="checkbox4" width="100%" />
+                    <js:CheckBox id="checkbox5" width="100%" />
+                    <js:CheckBox id="checkbox6" width="100%" />
+                    <js:CheckBox id="checkbox7" width="100%" />
+                    <js:CheckBox id="checkbox8" width="100%" />
+                </js:Container>
+                <js:TextButton text="Next Question" click="result()" />
+            </js:Container>
+            <js:Container id="resultPage" visible="false">
+                <js:beads>
+                    <js:VerticalLayoutWithPaddingAndGap gap="20" />
+                </js:beads>
+                <js:style>
+                    <js:SimpleCSSStyles padding="20" />
+                </js:style>
+                <js:Label text="You got it right" visible="{right}" />
+                <js:Label text="Sorry that's not quite right. Here some help so you'll get it right next time." visible="{!right}"/>
+                <js:VContainer>
+                    <js:MultilineLabel text="{reason}" width="500" />
+                </js:VContainer>
+                <js:Container id="hints" width="500">
+                    <js:beads>
+                       <js:VerticalLayoutWithPaddingAndGap gap="10" />
+                    </js:beads>
+                    <js:Label id="someHints" text="Some hints:" />
+                    <js:Label id="hint1" width="100%" />
+                    <js:Label id="hint2" width="100%" />
+                    <js:Label id="hint3" width="100%" />
+                    <js:Label id="hint4" width="100%" />
+                    <js:Label id="hint5" width="100%" />
+                    <js:Label id="hint6" width="100%" />
+                    <js:Label id="hint7" width="100%" />
+                    <js:Label id="hint8" width="100%" />
+                </js:Container>
+                <js:Container id="links" width="500">
+                    <js:beads>
+                       <js:VerticalLayoutWithPaddingAndGap gap="10" />
+                    </js:beads>
+                    <js:Label id="seealso" text="See also:" />
+                    <html:A id="link1" width="100%" />
+                    <html:A id="link2" width="100%" />
+                    <html:A id="link3" width="100%" />
+                    <html:A id="link4" width="100%" />
+                    <html:A id="link5" width="100%" />
+                    <html:A id="link6" width="100%" />
+                    <html:A id="link7" width="100%" />
+                    <html:A id="link8" width="100%" />
+                </js:Container>
+                <js:TextButton text="Next Question" click="endQuiz()" />
+            </js:Container>
+            <js:Container id="scorePage" visible="false">
+                <js:beads>
+                    <js:VerticalLayoutWithPaddingAndGap gap="20" />
+                </js:beads>
+                <js:style>
+                    <js:SimpleCSSStyles padding="20" />
+                </js:style>
+                <js:Label text="You scored {score} out of {total}." />
+                <js:TextButton text="Try Again" click="settings()" />
+            </js:Container>
+            <js:Label text="Copyright © 2018 Justin Mclean, Licensed under the Apache License, Version 2.0." />
+            <js:Label text="Apache, the Apache feather logo are trademarks of The Apache Software Foundation." />
+        </js:View>
+    </js:initialView>
+
+</js:Application>

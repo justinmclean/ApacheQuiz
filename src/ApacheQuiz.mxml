@@ -286,14 +286,14 @@ limitations under the License.
                        <js:VerticalLayoutWithPaddingAndGap gap="10" />
                     </js:beads>
                     <js:Label id="someHints" text="Some hints:" />
-                    <js:Label id="hint1" width="100%" />
-                    <js:Label id="hint2" width="100%" />
-                    <js:Label id="hint3" width="100%" />
-                    <js:Label id="hint4" width="100%" />
-                    <js:Label id="hint5" width="100%" />
-                    <js:Label id="hint6" width="100%" />
-                    <js:Label id="hint7" width="100%" />
-                    <js:Label id="hint8" width="100%" />
+                    <js:MultilineLabel id="hint1" width="100%" />
+                    <js:MultilineLabel id="hint2" width="100%" />
+                    <js:MultilineLabel id="hint3" width="100%" />
+                    <js:MultilineLabel id="hint4" width="100%" />
+                    <js:MultilineLabel id="hint5" width="100%" />
+                    <js:MultilineLabel id="hint6" width="100%" />
+                    <js:MultilineLabel id="hint7" width="100%" />
+                    <js:MultilineLabel id="hint8" width="100%" />
                 </js:Container>
                 <js:Container id="links" width="500">
                     <js:beads>

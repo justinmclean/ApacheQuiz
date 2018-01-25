@@ -102,7 +102,7 @@
         "hint": "Apache releases open source, binaries are provided as a convenience only."
       }
     ],
-    "reason": "Apache only produces source releases and users can only be directed to official voted on releases.",
+    "reason": "Apache only produces source releases and users can only be directed to official releases that have been voted on.",
     "links": [
       {
         "name": "Publication",
@@ -332,7 +332,7 @@
     ]
   },
   {
-    "question": "Once released what must the PMC do?",
+    "question": "Once a new version of the project has been released, what must the PMC do?",
     "show": "4",
     "category": "release policy",
     "answers": [
@@ -362,7 +362,7 @@
         "hint": "It may talk a little while for thr mirrors to catch up."
       }
     ],
-    "reason": "Released need to published in the correct place (to be mirrored) and you need to tell people about them.",
+    "reason": "Releases need to published in the correct place (to be mirrored) and you need to tell people about them.",
     "links": [
       {
         "name": "Release distribution",
@@ -607,7 +607,7 @@
       {
         "answer": "Third party copyright notices.",
         "correct": false,
-        "hint": "Copyrights usually go in LICENSE. The exceptions are relocated copyrights and copyright from 3rd party Apache license v2 NOTICE files."
+        "hint": "Copyrights usually go in LICENSE. The exceptions are relocated copyrights and copyrights from 3rd party Apache license v2 NOTICE files."
       },
       {
         "answer": "License terms.",

@@ -542,7 +542,7 @@
         "hint": "Do the majority of the users need this optional component?"
       }
     ],
-    "reason": "Prohibited licensed software can not be distributed.",
+    "reason": "Prohibited licensed software can not be distributed but you can rely on optional dependencies.",
     "links": [
       {
         "name": "Optional dependency",

@@ -267,6 +267,7 @@ limitations under the License.
                     <js:CheckBox id="checkbox7" width="100%" />
                     <js:CheckBox id="checkbox8" width="100%" />
                 </js:Container>
+                <js:MultilineLabel width="100%" text="NOTE that none, one or more than one answer could be right. Please tick all you think are correct." />
                 <js:TextButton text="Next Question" click="result()" />
             </js:Container>
             <js:Container id="resultPage" visible="false">

@@ -332,7 +332,7 @@
     ]
   },
   {
-    "question": "Once *a new version of the project has been* released, what must the PMC do?",
+    "question": "Once a new version of the project has been released, what must the PMC do?",
     "show": "4",
     "category": "release policy",
     "answers": [

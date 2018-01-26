@@ -72,24 +72,24 @@ limitations under the License.
             var answers:Array = question["answers"];
             var noAnswers:int = answers.length;
 
-            for (var i:int = 1; i <= 8; i ++) {
+            for (var i:int = 1; i <= NO_CHECKBOXES; i ++) {
                 var checkBox:CheckBox = this["checkbox" + i] as CheckBox;
                 checkBox.visible = false;
             }
 
-            i = 1;
+            var checkboxNo:int = 1;
             order = [];
             var tries:int = 0;
             actualShown = 0;
 
-            while (i <= showNo && tries < 100) {
-                checkBox = this["checkbox" + i] as CheckBox;
-                checkBox.visible = true;
-                var answerNo:int = Math.floor(Math.random()*noAnswers);
+            while (actualShown < showNo && tries < 100) {
+                checkBox = this["checkbox" + checkboxNo] as CheckBox;
+                var answerNo:int = Math.floor(Math.random() * noAnswers);
                 if (!order.includes(answerNo) && answers[answerNo]["level"] <= level) {
                     checkBox.text = answers[answerNo]["answer"];
+                    checkBox.visible = true;
                     order.push(answerNo);
-                    i++;
+                    checkboxNo++;
                     actualShown++;
                 }
                 tries++;
@@ -100,14 +100,18 @@ limitations under the License.
             for (var i:int = 1; i <= NO_CHECKBOXES; i++) {
                 var checkBox:CheckBox = this["checkbox" + i] as CheckBox;
                 checkBox.selected = false;
+                checkBox.visible  = false;
+                checkBox.text = "";
             }
         }
 
         public function hideHints():void {
-            someHints.visible = false;
+            questionAgain.visible = false;
             for (var i:int = 1; i <= NO_HINTS; i++) {
                 var hint:Label = this["hint" + i] as Label;
+                var answer:CheckBox = this["answer" + i] as CheckBox;
                 hint.visible = false;
+                answer.visible = false;
             }
         }
 
@@ -121,32 +125,35 @@ limitations under the License.
 
         public function checkAnswer():Boolean {
             var question:Object = questions[questionNo];
-            ask = question.question;
             var hints:Array = [];
+            var index:Array = [];
 
             right = true;
             noright = 0;
 
             for (var i:int = 1; i <= actualShown; i++) {
                 var checkbox:CheckBox = this["checkbox" + i] as CheckBox;
-                var answer:Object = question["answers"][order[i-1]];
+                var id:int = order[i-1];
+                var answer:Object = question["answers"][id];
                 if (checkbox.selected) {
                     if (!answer["correct"]) {
                         right = false;
                         hints.push(answer["hint"]);
+                        index.push(id);
                     }
                     else {
                         // harder questions are worth more
-                        noright += question["level"];
+                        noright += answer["level"];
                     }
                 }
                 else {
                     if (answer["correct"]) {
-                      right = false;
-                      hints.push(answer["hint"]);
+                        right = false;
+                        hints.push(answer["hint"]);
+                        index.push(id);
                     }
                     else {
-                      noright++;
+                        noright++;
                     }
                 }
             }
@@ -160,11 +167,16 @@ limitations under the License.
 
             hideHints();
             if (hints.length > 0) {
-                someHints.visible = true;
+                questionAgain.visible = true;
+                questionAgain.text = question["question"];
                 for (i = 1; i <= hints.length; i++) {
                     var hint:Label = this["hint" + i] as Label;
+                    var wrong:CheckBox = this["answer" + i] as CheckBox;
+                    answer = question["answers"][index[i - 1]];
+                    wrong.visible = true;
+                    wrong.text = answer["answer"];
+                    wrong.selected = !answer["correct"];
                     hint.visible = true;
-                    answer = question["answers"][order[i-1]];
                     hint.text = answer["hint"];
                 }
             }
@@ -315,15 +327,63 @@ limitations under the License.
                     <js:beads>
                        <js:VerticalLayoutWithPaddingAndGap gap="10" />
                     </js:beads>
-                    <js:Label id="someHints" text="Some hints:" />
-                    <js:MultilineLabel id="hint1" width="100%" />
-                    <js:MultilineLabel id="hint2" width="100%" />
-                    <js:MultilineLabel id="hint3" width="100%" />
-                    <js:MultilineLabel id="hint4" width="100%" />
-                    <js:MultilineLabel id="hint5" width="100%" />
-                    <js:MultilineLabel id="hint6" width="100%" />
-                    <js:MultilineLabel id="hint7" width="100%" />
-                    <js:MultilineLabel id="hint8" width="100%" />
+                    <js:MultilineLabel id="questionAgain" text="" />
+                    <js:Container>
+                        <js:beads>
+                           <js:VerticalLayoutWithPaddingAndGap gap="5" />
+                        </js:beads>
+                        <js:CheckBox id="answer1" width="100%" />
+                        <js:MultilineLabel id="hint1" width="100%" />
+                    </js:Container>
+                    <js:Container>
+                        <js:beads>
+                           <js:VerticalLayoutWithPaddingAndGap gap="5" />
+                        </js:beads>
+                        <js:CheckBox id="answer2" width="100%" />
+                        <js:MultilineLabel id="hint2" width="100%" />
+                    </js:Container>
+                    <js:Container>
+                        <js:beads>
+                           <js:VerticalLayoutWithPaddingAndGap gap="5" />
+                        </js:beads>
+                        <js:CheckBox id="answer3" width="100%" />
+                        <js:MultilineLabel id="hint3" width="100%" />
+                    </js:Container>
+                    <js:Container>
+                        <js:beads>
+                           <js:VerticalLayoutWithPaddingAndGap gap="5" />
+                        </js:beads>
+                        <js:CheckBox id="answer4" width="100%" />
+                        <js:MultilineLabel id="hint4" width="100%" />
+                    </js:Container>
+                    <js:Container>
+                        <js:beads>
+                           <js:VerticalLayoutWithPaddingAndGap gap="5" />
+                        </js:beads>
+                        <js:CheckBox id="answer5" width="100%" />
+                        <js:MultilineLabel id="hint5" width="100%" />
+                    </js:Container>
+                    <js:Container>
+                        <js:beads>
+                           <js:VerticalLayoutWithPaddingAndGap gap="5" />
+                        </js:beads>
+                        <js:CheckBox id="answer6" width="100%" />
+                        <js:MultilineLabel id="hint6" width="100%" />
+                    </js:Container>
+                    <js:Container>
+                        <js:beads>
+                           <js:VerticalLayoutWithPaddingAndGap gap="5" />
+                        </js:beads>
+                        <js:CheckBox id="answer7" width="100%" />
+                        <js:MultilineLabel id="hint7" width="100%" />
+                    </js:Container>
+                    <js:Container>
+                        <js:beads>
+                           <js:VerticalLayoutWithPaddingAndGap gap="5" />
+                        </js:beads>
+                        <js:CheckBox id="answer8" width="100%" />
+                        <js:MultilineLabel id="hint8" width="100%" />
+                    </js:Container>
                 </js:Container>
                 <js:Container id="links" width="500">
                     <js:beads>

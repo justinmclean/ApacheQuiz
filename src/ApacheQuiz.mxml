@@ -136,7 +136,8 @@ limitations under the License.
                         hints.push(answer["hint"]);
                     }
                     else {
-                        noright++;
+                        // harder questions are worth more
+                        noright += question["level"];
                     }
                 }
                 else {
@@ -186,6 +187,7 @@ limitations under the License.
 
         public function endQuiz():void {
             if (total >= noQuestions)   {
+                score = Math.round(score * 10) / 10;
                 end();
             }
             else {

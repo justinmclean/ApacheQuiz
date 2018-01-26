@@ -451,19 +451,19 @@
         "answer": "Apache software License 1.1.",
         "correct": true,
         "level": 1,
-        "hint": "A license which add no restrictions is compatible."
+        "hint": "A license which adds no restrictions is compatible."
       },
       {
         "answer": "BSD 2-clause.",
         "correct": true,
         "level": 1,
-        "hint": "A license which add no restrictions is compatible."
+        "hint": "A license which adds no restrictions is compatible."
       },
       {
         "answer": "BSD 3-clause.",
         "correct": true,
         "level": 1,
-        "hint": "A license which add no restrictions is compatible."
+        "hint": "A license which adds no restrictions is compatible."
       },
       {
         "answer": "BSD with advertising clause.",
@@ -475,13 +475,13 @@
         "answer": "MIT or X11 license.",
         "correct": true,
         "level": 1,
-        "hint": "A license which add no restrictions is compatible."
+        "hint": "A license which adds no restrictions is compatible."
       },
       {
         "answer": "W3C software license.",
         "correct": true,
         "level": 2,
-        "hint": "A license which add no restrictions is compatible."
+        "hint": "A license which adds no restrictions is compatible."
       },
       {
         "answer": "GNU GPL 1, 2, 3.",
@@ -517,7 +517,7 @@
         "answer": "Creative Commons Copyright-Only Dedication.",
         "correct": true,
         "level": 2,
-        "hint": "A license which add no restrictions is compatible."
+        "hint": "A license which adds no restrictions is compatible."
       },
       {
         "answer": "Eclipse Public License EPL 1.0.",
@@ -535,7 +535,7 @@
         "answer": "Works in the public domain.",
         "correct": true,
         "level": 1,
-        "hint": "A license which add no restrictions is compatible."
+        "hint": "A license which adds no restrictions is compatible."
       }
     ],
     "reason": "License that do not add any additional restrictions than the Apache License 2.0 are compatible.",
